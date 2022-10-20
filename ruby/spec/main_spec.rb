@@ -20,6 +20,24 @@ describe 'Inventory' do
     expect(updated_item.price).to eq(18)
   end
 
+  it 'reduces price and sell_by for flowers' do
+    updated_item = add_item_and_update_price('Flowers', 10, 20)
+    expect(updated_item.sell_by).to eq(9)
+    expect(updated_item.price).to eq(18)
+  end
+
+  it 'reduces price FOUR times as fast for Flowers past sell_by' do
+    updated_item = add_item_and_update_price('Flowers', -1, 20)
+    expect(updated_item.price).to eq(16)
+  end
+
+  it 'does not allow price for Flowers to go negative' do
+    updated_item = add_item_and_update_price('Flowers', 10, 0)
+    expect(updated_item.price).to eq(0)
+    updated_item = add_item_and_update_price('Flowers', 10, 1)
+    expect(updated_item.price).to eq(0)
+  end
+
   it 'does not allow price to go negative' do
     updated_item = add_item_and_update_price('Normal Item', 10, 0)
     expect(updated_item.price).to eq(0)
@@ -66,5 +84,17 @@ describe 'Inventory' do
   it 'reduces price to 0 when sell_by for Concert Tickets is zero' do
     updated_item = add_item_and_update_price('Concert Tickets', 0, 20)
     expect(updated_item.price).to eq(0)
+  end
+end
+
+describe 'Flowers' do
+  def add_item_and_update_price(name, sell_by, price)
+    items = [Item.new(name, sell_by, price)]
+    inventory = Inventory.new(items)
+    inventory.update_price
+    items.first
+  end
+
+  it 'reduces price and sell_by' do
   end
 end
